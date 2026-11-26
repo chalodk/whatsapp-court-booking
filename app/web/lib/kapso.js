@@ -79,6 +79,72 @@ export async function sendTemplate({ phoneNumberId, to, templateName, languageCo
   return { ok: true, message: clip(result.data) };
 }
 
+export async function createTemplate(businessAccountId, payload) {
+  const version = process.env.META_GRAPH_VERSION || "v24.0";
+  const url = `${baseUrl()}/meta/whatsapp/${version}/${businessAccountId}/message_templates`;
+  const result = await kapsoFetch(url, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+  if (!result.ok) return { ok: false, status: result.status, error: clip(result.data) };
+  return { ok: true, template: clip(result.data) };
+}
+
+export async function createFlow({ phoneNumberId, name, flowJson, publish }) {
+  const url = `${baseUrl()}/platform/v1/whatsapp/flows`;
+  const body = { phone_number_id: phoneNumberId };
+  if (name) body.name = name;
+  if (flowJson) body.flow_json = flowJson;
+  if (publish) body.publish = true;
+  const result = await kapsoFetch(url, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+  if (!result.ok) return { ok: false, status: result.status, error: clip(result.data) };
+  return { ok: true, flow: clip(result.data) };
+}
+
+export async function publishFlow({ flowId, phoneNumberId }) {
+  const url = `${baseUrl()}/platform/v1/whatsapp/flows/${flowId}/publish`;
+  const body = phoneNumberId ? { phone_number_id: phoneNumberId } : {};
+  const result = await kapsoFetch(url, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+  if (!result.ok) return { ok: false, status: result.status, error: clip(result.data) };
+  return { ok: true, flow: clip(result.data) };
+}
+
+export async function sendFlow({ phoneNumberId, to, flowId, bodyText, flowCta, mode }) {
+  const version = process.env.META_GRAPH_VERSION || "v24.0";
+  const url = `${baseUrl()}/meta/whatsapp/${version}/${phoneNumberId}/messages`;
+  const result = await kapsoFetch(url, {
+    method: "POST",
+    body: JSON.stringify({
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to,
+      type: "interactive",
+      interactive: {
+        type: "flow",
+        body: { text: bodyText },
+        action: {
+          name: "flow",
+          parameters: {
+            flow_message_version: "3",
+            flow_id: flowId,
+            flow_cta: flowCta || "Elegir horario",
+            flow_token: flowId,
+            ...(mode ? { mode } : {}),
+          },
+        },
+      },
+    }),
+  });
+  if (!result.ok) return { ok: false, status: result.status, error: clip(result.data) };
+  return { ok: true, message: clip(result.data) };
+}
+
 export async function sendText({ phoneNumberId, to, body }) {
   const version = process.env.META_GRAPH_VERSION || "v24.0";
   const url = `${baseUrl()}/meta/whatsapp/${version}/${phoneNumberId}/messages`;

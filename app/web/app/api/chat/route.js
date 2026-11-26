@@ -17,10 +17,10 @@ export async function POST(request) {
   const { messages } = await request.json();
   const result = streamText({
     model: openai(process.env.OPENAI_MODEL || "gpt-4.1-mini"),
-    system: `${agentPreamble}\n\n${agentInstructions()}`,
+    system: `${agentPreamble}\n\n${agentInstructions()}\n\n${agentPreamble}`,
     messages: await convertToModelMessages(messages),
     tools: kapsoTools,
-    stopWhen: stepCountIs(6),
+    stopWhen: stepCountIs(8),
   });
 
   return result.toUIMessageStreamResponse();
