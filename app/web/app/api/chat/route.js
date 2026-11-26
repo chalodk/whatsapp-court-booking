@@ -1,6 +1,7 @@
-import { convertToModelMessages, streamText } from "ai";
+import { convertToModelMessages, stepCountIs, streamText } from "ai";
 import { openai } from "@ai-sdk/openai";
 import { agentInstructions, agentPreamble } from "../../../lib/agent-context";
+import { kapsoTools } from "../../../lib/kapso-tools";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -18,6 +19,8 @@ export async function POST(request) {
     model: openai(process.env.OPENAI_MODEL || "gpt-4.1-mini"),
     system: `${agentPreamble}\n\n${agentInstructions()}`,
     messages: await convertToModelMessages(messages),
+    tools: kapsoTools,
+    stopWhen: stepCountIs(6),
   });
 
   return result.toUIMessageStreamResponse();
