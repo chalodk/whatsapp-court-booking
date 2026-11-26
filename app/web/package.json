@@ -3,12 +3,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
-    "build": "next build",
+    "build": "node scripts/bundle-context.mjs && next build",
     "start": "next start -p 3001"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.146",
+    "@ai-sdk/react": "^3.0.340",
+    "ai": "^6.0.337",
     "next": "^15.5.29",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
   }
 }

@@ -1,9 +1,8 @@
 import "./globals.css";
-import { Nav } from "../components/Nav";
 
 export const metadata = {
   title: "Canchas",
-  description: "Invitaciones y agenda de canchas por WhatsApp",
+  description: "El agente del club, por chat",
 };
 
 export default function RootLayout({ children }) {
@@ -14,9 +13,8 @@ export default function RootLayout({ children }) {
           <header className="top">
             <div className="brand">
               <strong>Canchas</strong>
-              <span>Invitaciones y agenda por WhatsApp</span>
+              <span>Agente de la semana</span>
             </div>
-            <Nav />
           </header>
           <main>{children}</main>
         </div>
